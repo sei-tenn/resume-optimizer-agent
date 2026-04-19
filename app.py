@@ -1,5 +1,6 @@
 import os
 import re
+import secrets
 from flask import Flask, render_template, request, jsonify, session
 import openai
 from dotenv import load_dotenv
@@ -7,10 +8,29 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')
+
+# 自动生成或获取Flask Secret Key
+flask_secret_key = os.getenv('FLASK_SECRET_KEY')
+if not flask_secret_key:
+    # 生成安全的随机密钥
+    flask_secret_key = secrets.token_hex(32)
+    # 设置到环境变量中以便其他部分使用
+    os.environ['FLASK_SECRET_KEY'] = flask_secret_key
+    # 开发环境下打印提示
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    if debug_mode:
+        print(f"⚠️  开发环境：自动生成Flask Secret Key")
+        print(f"   如需持久化，请在.env文件中设置：FLASK_SECRET_KEY={flask_secret_key}")
+app.secret_key = flask_secret_key
 
 # 配置DeepSeek API
-openai.api_key = os.getenv('DEEPSEEK_API_KEY')
+deepseek_api_key = os.getenv('DEEPSEEK_API_KEY')
+if not deepseek_api_key:
+    print("❌ 错误：未设置DeepSeek API Key")
+    print("   请在.env文件中设置：DEEPSEEK_API_KEY=sk-your-api-key")
+    print("   或通过环境变量设置：export DEEPSEEK_API_KEY=sk-your-api-key")
+    # 不退出，让应用启动但API调用会失败
+openai.api_key = deepseek_api_key
 openai.api_base = os.getenv('DEEPSEEK_API_BASE', 'https://api.deepseek.com/v1')
 model = os.getenv('DEEPSEEK_MODEL', 'deepseek-chat')
 

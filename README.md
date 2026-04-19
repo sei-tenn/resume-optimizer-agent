@@ -51,8 +51,8 @@ cp .env.example .env
 # DeepSeek API配置
 DEEPSEEK_API_KEY=sk-your-api-key-here
 
-# Flask配置（可选）
-FLASK_SECRET_KEY=your-secret-key-here
+# Flask配置（可选，开发环境会自动生成）
+# FLASK_SECRET_KEY=your-secret-key-here
 FLASK_DEBUG=false
 ```
 
@@ -78,7 +78,7 @@ docker build -t resume-optimizer-agent .
 docker run -d \
   -p 5000:5000 \
   -e DEEPSEEK_API_KEY=sk-your-api-key-here \
-  -e FLASK_SECRET_KEY=your-secret-key-here \
+  # -e FLASK_SECRET_KEY=your-secret-key-here \  # 可选，未设置时会自动生成
   --name resume-optimizer \
   resume-optimizer-agent
 ```
@@ -97,7 +97,7 @@ pip install -r requirements.txt
 
 # 设置环境变量
 export DEEPSEEK_API_KEY=sk-your-api-key-here
-export FLASK_SECRET_KEY=your-secret-key-here
+# export FLASK_SECRET_KEY=your-secret-key-here  # 可选，开发环境会自动生成
 
 # 启动开发服务器
 python app.py
@@ -188,7 +188,7 @@ GET /download
 | `DEEPSEEK_API_KEY` | 是 | 无 | DeepSeek API密钥 |
 | `DEEPSEEK_API_BASE` | 否 | `https://api.deepseek.com/v1` | DeepSeek API基础URL |
 | `DEEPSEEK_MODEL` | 否 | `deepseek-chat` | 使用的模型名称 |
-| `FLASK_SECRET_KEY` | 否 | `dev-secret-key` | Flask会话密钥 |
+| `FLASK_SECRET_KEY` | 否 | 自动生成（开发环境） | Flask会话密钥，未设置时会自动生成随机密钥 |
 | `FLASK_DEBUG` | 否 | `false` | 调试模式 |
 | `PORT` | 否 | `5000` | 应用端口 |
 
