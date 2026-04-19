@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>优化结果 - 简历优化Agent</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .result-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 20px;
+            border-left: 4px solid #2ecc71;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 600px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            min-width: 180px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        @media (max-width: 768px) {
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-check-circle"></i> 简历优化完成</h1>
+            <p>您的简历已根据目标职位优化完成，请查看下方优化后的内容</p>
+        </header>
+
+        <div class="content">
+            <h2><i class="fas fa-file-alt"></i> 优化后的简历</h2>
+            <p>以下是根据目标职位描述优化后的简历内容：</p>
+
+            <div class="result-container">
+                {{ optimized_resume }}
+            </div>
+
+            <div class="actions">
+                <a href="/download" class="btn btn-primary" target="_blank">
+                    <i class="fas fa-download"></i> 下载优化简历
+                </a>
+                <a href="/" class="btn btn-success">
+                    <i class="fas fa-redo"></i> 优化另一份简历
+                </a>
+                <button onclick="copyToClipboard()" class="btn btn-secondary">
+                    <i class="fas fa-copy"></i> 复制到剪贴板
+                </button>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background-color: #f1f8ff; border-radius: 8px;">
+                <h3><i class="fas fa-lightbulb"></i> 使用建议</h3>
+                <ul style="margin-top: 10px; padding-left: 20px;">
+                    <li>下载优化后的简历，保存为PDF格式</li>
+                    <li>根据具体申请职位微调关键词</li>
+                    <li>确保联系方式准确无误</li>
+                    <li>建议使用专业字体和排版</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>简历优化Agent &copy; 2026 | 使用DeepSeek API提供智能分析服务</p>
+            <p>注意：您的简历数据仅用于本次分析，不会存储或用于其他用途</p>
+        </footer>
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const resultText = document.querySelector('.result-container').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert('简历内容已复制到剪贴板！');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动选择文本复制');
+            });
+        }
+    </script>
+</body>
+</html>

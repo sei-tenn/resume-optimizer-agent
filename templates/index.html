@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历优化Agent</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+            gap: 30px;
+        }
+
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .output-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 200px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .analysis-result, .optimized-result {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .step-indicator:before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background-color: #e0e6ed;
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 3px solid #e0e6ed;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .step.active {
+            border-color: #3498db;
+            background-color: #3498db;
+            color: white;
+        }
+
+        .step.completed {
+            border-color: #2ecc71;
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .step-number {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .step-text {
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .step-indicator {
+                flex-direction: column;
+                gap: 20px;
+                align-items: center;
+            }
+
+            .step-indicator:before {
+                display: none;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-robot"></i> 简历优化Agent</h1>
+            <p>上传您的简历和目标职位描述，AI将分析匹配度并提供优化建议，帮助您获得更多面试机会</p>
+        </header>
+
+        <div class="step-indicator">
+            <div class="step active" id="step1">
+                <div class="step-number">1</div>
+                <div class="step-text">输入信息</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-number">2</div>
+                <div class="step-text">分析匹配度</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-number">3</div>
+                <div class="step-text">优化简历</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-number">4</div>
+                <div class="step-text">查看结果</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-title">
+                    <i class="fas fa-file-upload"></i> 输入简历和职位描述
+                </div>
+
+                <form id="resumeForm">
+                    <div class="form-group">
+                        <label for="resume_text"><i class="fas fa-user"></i> 简历内容 (可粘贴或上传文本文件)</label>
+                        <textarea id="resume_text" name="resume_text" placeholder="请粘贴您的简历内容，或上传文本文件..."></textarea>
+                        <div style="margin-top: 10px;">
+                            <input type="file" id="fileUpload" accept=".txt,.pdf,.doc,.docx" style="display: none;">
+                            <button type="button" id="uploadBtn" class="btn" style="width: auto; padding: 8px 15px;">
+                                <i class="fas fa-upload"></i> 上传文件
+                            </button>
+                            <small style="margin-left: 10px; color: #7f8c8d;">支持 .txt, .pdf, .doc, .docx 格式</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="job_description"><i class="fas fa-briefcase"></i> 目标职位描述 (JD)</label>
+                        <textarea id="job_description" name="job_description" placeholder="请粘贴目标职位的描述..."></textarea>
+                    </div>
+
+                    <button type="button" id="analyzeBtn" class="btn">
+                        <i class="fas fa-search"></i> 分析简历匹配度
+                    </button>
+                </form>
+
+                <div class="loading" id="loadingAnalysis">
+                    <div class="spinner"></div>
+                    <p>正在分析简历与职位描述的匹配度，请稍候...</p>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-line"></i> 分析结果
+                </div>
+
+                <div id="analysisPlaceholder">
+                    <p style="color: #7f8c8d; text-align: center; padding: 40px;">
+                        <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                        分析结果将在这里显示
+                    </p>
+                </div>
+
+                <div class="analysis-result hidden" id="analysisResult"></div>
+
+                <div class="actions hidden" id="analysisActions">
+                    <button type="button" id="optimizeBtn" class="btn btn-secondary">
+                        <i class="fas fa-magic"></i> 优化简历
+                    </button>
+                </div>
+
+                <div class="loading hidden" id="loadingOptimization">
+                    <div class="spinner"></div>
+                    <p>正在优化简历，请稍候...</p>
+                </div>
+
+                <div class="section-title hidden" id="optimizedTitle">
+                    <i class="fas fa-file-alt"></i> 优化后的简历
+                </div>
+
+                <div class="optimized-result hidden" id="optimizedResult"></div>
+
+                <div class="actions hidden" id="resultActions">
+                    <a href="/download" class="btn" target="_blank">
+                        <i class="fas fa-download"></i> 下载优化简历
+                    </a>
+                    <button type="button" id="restartBtn" class="btn" style="background: #95a5a6;">
+                        <i class="fas fa-redo"></i> 重新开始
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>简历优化Agent &copy; 2026 | 使用DeepSeek API提供智能分析服务</p>
+            <p>注意：您的简历数据仅用于本次分析，不会存储或用于其他用途</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const optimizeBtn = document.getElementById('optimizeBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileUpload = document.getElementById('fileUpload');
+            const resumeTextarea = document.getElementById('resume_text');
+            const loadingAnalysis = document.getElementById('loadingAnalysis');
+            const loadingOptimization = document.getElementById('loadingOptimization');
+            const analysisResult = document.getElementById('analysisResult');
+            const analysisPlaceholder = document.getElementById('analysisPlaceholder');
+            const analysisActions = document.getElementById('analysisActions');
+            const optimizedResult = document.getElementById('optimizedResult');
+            const optimizedTitle = document.getElementById('optimizedTitle');
+            const resultActions = document.getElementById('resultActions');
+            const steps = document.querySelectorAll('.step');
+
+            // 文件上传处理
+            uploadBtn.addEventListener('click', () => fileUpload.click());
+
+            fileUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    resumeTextarea.value = e.target.result;
+                };
+
+                // 简单处理：只读取文本文件，其他格式提示
+                if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+                    reader.readAsText(file);
+                } else {
+                    alert('目前仅支持文本文件 (.txt)。对于PDF或Word文件，请先转换为文本格式。');
+                }
+            });
+
+            // 分析按钮点击事件
+            analyzeBtn.addEventListener('click', function() {
+                const resumeText = resumeTextarea.value.trim();
+                const jobDescription = document.getElementById('job_description').value.trim();
+
+                if (!resumeText || !jobDescription) {
+                    alert('请填写简历内容和职位描述');
+                    return;
+                }
+
+                // 显示加载状态
+                loadingAnalysis.style.display = 'block';
+                analysisPlaceholder.style.display = 'none';
+                analysisResult.classList.add('hidden');
+                analysisActions.classList.add('hidden');
+
+                // 更新步骤指示器
+                updateSteps(2);
+
+                // 发送分析请求
+                fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        resume_text: resumeText,
+                        job_description: jobDescription
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingAnalysis.style.display = 'none';
+
+                    if (data.error) {
+                        alert('分析失败: ' + data.error);
+                        updateSteps(1);
+                        return;
+                    }
+
+                    // 显示分析结果
+                    analysisResult.textContent = data.analysis;
+                    analysisResult.classList.remove('hidden');
+                    analysisActions.classList.remove('hidden');
+                })
+                .catch(error => {
+                    loadingAnalysis.style.display = 'none';
+                    alert('请求失败: ' + error);
+                    updateSteps(1);
+                });
+            });
+
+            // 优化按钮点击事件
+            optimizeBtn.addEventListener('click', function() {
+                // 显示加载状态
+                loadingOptimization.classList.remove('hidden');
+                analysisResult.classList.add('hidden');
+                analysisActions.classList.add('hidden');
+
+                // 更新步骤指示器
+                updateSteps(3);
+
+                // 发送优化请求
+                fetch('/optimize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        confirm: true
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingOptimization.classList.add('hidden');
+
+                    if (data.error) {
+                        alert('优化失败: ' + data.error);
+                        updateSteps(2);
+                        return;
+                    }
+
+                    // 显示优化结果
+                    optimizedResult.textContent = data.optimized_resume;
+                    optimizedResult.classList.remove('hidden');
+                    optimizedTitle.classList.remove('hidden');
+                    resultActions.classList.remove('hidden');
+
+                    // 更新步骤指示器
+                    updateSteps(4);
+                })
+                .catch(error => {
+                    loadingOptimization.classList.add('hidden');
+                    alert('请求失败: ' + error);
+                    updateSteps(2);
+                });
+            });
+
+            // 重新开始按钮
+            restartBtn.addEventListener('click', function() {
+                // 重置表单
+                document.getElementById('resumeForm').reset();
+
+                // 隐藏结果区域
+                analysisResult.classList.add('hidden');
+                analysisActions.classList.add('hidden');
+                optimizedResult.classList.add('hidden');
+                optimizedTitle.classList.add('hidden');
+                resultActions.classList.add('hidden');
+
+                // 显示占位符
+                analysisPlaceholder.style.display = 'block';
+
+                // 重置步骤指示器
+                updateSteps(1);
+            });
+
+            // 更新步骤指示器
+            function updateSteps(stepNumber) {
+                steps.forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    if (index + 1 < stepNumber) {
+                        step.classList.add('completed');
+                    } else if (index + 1 === stepNumber) {
+                        step.classList.add('active');
+                    }
+                });
+            }
+
+            // 初始化步骤指示器
+            updateSteps(1);
+        });
+    </script>
+</body>
+</html>
